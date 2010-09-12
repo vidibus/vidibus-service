@@ -37,10 +37,6 @@ module Vidibus
       def delete(path, options = {})
         request(:delete, path, options)
       end
-      
-      def response
-        super
-      end
 
       protected
 
