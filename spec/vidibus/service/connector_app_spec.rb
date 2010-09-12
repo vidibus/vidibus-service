@@ -16,6 +16,17 @@ describe "Vidibus::Service::ConnectorApp" do
   def signed_request(method, url, params = nil)
     self.send(method, *Vidibus::Secure.sign_request(method, url, params, this.secret))
   end
+  
+  it "should fail for request methods other than GET, POST, PUT, and DELETE" do
+    head "http://manager.local/connector"
+    last_response.status.should eql(400)
+  end
+
+  it "should fail for paths other than /connector" do
+    get "http://manager.local/something"
+    last_response.status.should eql(400)
+    last_response.body.should eql(%({"error":"This app must be configured to respond to /connector path."}))
+  end
 
   describe "GET requests" do
     it "should fail without signature" do
@@ -231,15 +242,5 @@ describe "Vidibus::Service::ConnectorApp" do
       signed_request(:delete, "http://manager.local/connector", {:uuids =>["invalid", "60dfef509a8e012d599558b035f038ab"]})
       last_response.status.should eql(200)
     end
-  end
-
-  it "should fail for request methods other than GET, POST, PUT, and DELETE" do
-    head "http://manager.local/connector"
-    last_response.status.should eql(400)
-  end
-
-  it "should fail for paths other than /connector" do
-    get "http://manager.local/connector"
-    last_response.status.should eql(400)
   end
 end
