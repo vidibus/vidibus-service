@@ -44,9 +44,9 @@ describe Vidibus::Service::Client do
   describe "#post" do
     it "should send data via POST" do
       stub_http_request(:post, "http://uploader.local/create").
-        with(:query => {:some => "thing", :realm => uploader.realm_uuid, :service => this.uuid, :sign => "9c16bc080f106c73f28813f02899be97301b1b627d25a65d52f68a3c9732559d"}).
+        with(:body => {:some => "thing", :realm => uploader.realm_uuid, :service => this.uuid, :sign => "9c16bc080f106c73f28813f02899be97301b1b627d25a65d52f68a3c9732559d"}).
           to_return(:status => 200)
-      response = client.post("/create", :query => {:some => "thing"})
+      response = client.post("/create", :body => {:some => "thing"})
       response.code.should eql(200)
     end
   end
@@ -54,9 +54,9 @@ describe Vidibus::Service::Client do
   describe "#put" do
     it "should send data via PUT" do
       stub_http_request(:put, "http://uploader.local/update").
-        with(:query => {:some => "thing", :realm => uploader.realm_uuid, :service => this.uuid, :sign => "57e75433e49d9ef160b03b9e6a7d91fbd6523471eb8e7e36bb861066101f0903"}).
+        with(:body => {:some => "thing", :realm => uploader.realm_uuid, :service => this.uuid, :sign => "57e75433e49d9ef160b03b9e6a7d91fbd6523471eb8e7e36bb861066101f0903"}).
           to_return(:status => 200)
-      response = client.put("/update", :query => {:some => "thing"})
+      response = client.put("/update", :body => {:some => "thing"})
       response.code.should eql(200)
     end
   end

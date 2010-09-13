@@ -42,9 +42,10 @@ module Vidibus
 
       # Extends given query options and sends request with given verb.
       def request(verb, path, options)
-        options[:query] = {:realm => service.realm_uuid, :service => this.uuid}.merge(options[:query] || {})
+        options_type = %w[post put].include?(verb.to_s) ? :body : :query
+        options[options_type] = {:realm => service.realm_uuid, :service => this.uuid}.merge(options[options_type] || {})
         uri = build_uri(path)
-        Vidibus::Secure.sign_request(verb, uri, options[:query], secret)
+        Vidibus::Secure.sign_request(verb, uri, options[options_type], secret)
         self.class.send(verb, uri, options)
       end
 
