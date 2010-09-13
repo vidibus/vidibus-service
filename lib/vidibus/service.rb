@@ -7,6 +7,7 @@ end
 require "service/client"
 require "service/mongoid"
 require "service/connector_app"
+require "service/controller_validations"
 
 # Shorthand for Service.discover
 def Service(wanted, realm)
