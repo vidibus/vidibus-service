@@ -5,6 +5,7 @@ module Vidibus
       include Vidibus::Secure::Mongoid
 
       class ConfigurationError < Error; end
+      class ConnectorError < Error; end
 
       included do
         field :url
@@ -110,7 +111,7 @@ module Vidibus
             raise ArgumentError.new("Please provide a valid realm to discover an appropriate service.")
           end
           if response = connector.get("/services/#{wanted}", :query => {:realm => realm})
-            secret = response["secret"] || raise("no secret")
+            secret = response["secret"] || raise(ConnectorError.new("The Connector did not return a secret for #{wanted}. Response was: #{response.parsed_response.inspect}"))
             secret = Vidibus::Secure.decrypt(secret, this.secret)
             attributes = response.only(%w[uuid function url]).merge(:realm_uuid => realm, :secret => secret)
             create!(attributes)
