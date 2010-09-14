@@ -4,6 +4,7 @@ module Vidibus
       extend ActiveSupport::Concern
 
       included do
+        skip_before_filter :verify_authenticity_token
         before_filter :ensure_realm!
         before_filter :ensure_service!
         before_filter :validate_signature!
