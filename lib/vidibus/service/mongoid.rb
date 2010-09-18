@@ -61,6 +61,11 @@ module Vidibus
           attributes.only(%w[uuid function url])
         end
 
+        # Returns url without protocol.
+        def domain
+          url.gsub(/https?:\/\//, "") if url
+        end
+
         protected
 
         # Returns a Client for current service.

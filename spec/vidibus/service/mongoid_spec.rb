@@ -86,6 +86,12 @@ describe "Vidibus::Service::Mongoid" do
     end
   end
 
+  describe "#domain" do
+    it "should return the url without protocol" do
+      this.domain.should eql(this.url.gsub(/https?:\/\//, ""))
+    end
+  end
+
   describe "#connector?" do
     it "should return true if service is a Connector" do
       connector.connector?.should be_true
