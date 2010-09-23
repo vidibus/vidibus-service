@@ -16,7 +16,7 @@ describe "Vidibus::Service::ConnectorApp" do
   def signed_request(method, url, params = nil)
     self.send(method, *Vidibus::Secure.sign_request(method, url, params, this.secret))
   end
-  
+
   it "should fail for request methods other than GET, POST, PUT, and DELETE" do
     head "http://manager.local/connector"
     last_response.status.should eql(400)

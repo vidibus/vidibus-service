@@ -30,7 +30,7 @@ describe Vidibus::Service::Client do
       response.code.should eql(200)
       response.should eql({"hot" => "stuff"})
     end
-    
+
     it "should handle non-JSON responses" do
       stub_http_request(:get, "http://uploader.local/success").
         with(:query => {:realm => uploader.realm_uuid, :service => this.uuid, :sign => "43a4d004c55113131f198c9772760467727b5564de74aacfcf4686751e3d388a"}).
