@@ -32,7 +32,6 @@ GEM
     arel (1.0.1)
       activesupport (~> 3.0.0)
     bson (1.0.4)
-    bson_ext (1.0.7)
     builder (2.1.2)
     crack (0.1.8)
     diff-lcs (1.1.2)
@@ -121,17 +120,16 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bson_ext (~> 1.0.7)
   httparty
   jeweler
   json
-  mongoid (~> 2.0.0.beta.17)
+  mongoid (~> 2.0.0.beta.20)
   rake
   relevance-rcov
   rr
   rspec (~> 2.0.0.beta.20)
   vidibus-core_extensions
-  vidibus-secure (~> 0.0.1)
-  vidibus-uuid (~> 0.3.7)
+  vidibus-secure
+  vidibus-uuid
   vidibus-validate_uri
   webmock

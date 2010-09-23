@@ -13,7 +13,7 @@ begin
     gem.email = "andre@vidibus.com"
     gem.homepage = "http://github.com/vidibus/vidibus-service"
     gem.authors = ["Andre Pankratz"]
-    gem.add_dependency "mongoid", "~> 2.0.0.beta.17"
+    gem.add_dependency "mongoid", "~> 2.0.0.beta.20"
     gem.add_dependency "vidibus-core_extensions"
     gem.add_dependency "vidibus-uuid"
     gem.add_dependency "vidibus-secure"

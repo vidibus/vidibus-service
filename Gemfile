@@ -1,11 +1,9 @@
 source :rubygems
 
-gem "mongoid", "~> 2.0.0.beta.17"
-gem "bson_ext", "~> 1.0.7"
+gem "mongoid", "~> 2.0.0.beta.20"
 gem "vidibus-core_extensions"
-
-gem "vidibus-secure", "~> 0.0.1"
-gem "vidibus-uuid", "~> 0.3.7"
+gem "vidibus-secure"
+gem "vidibus-uuid"
 gem "vidibus-validate_uri"
 
 gem "httparty"
