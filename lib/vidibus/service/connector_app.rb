@@ -9,8 +9,6 @@ module Vidibus
         self.new.call(env)
       end
 
-      # This is just a rack endpoint for Remote authentication. It will be called
-      # by the Remote after requesting an authentication code.
       def call(env)
         @request = Rack::Request.new(env)
         unless @request.path == "/connector"
