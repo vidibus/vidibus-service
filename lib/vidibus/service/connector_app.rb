@@ -25,7 +25,7 @@ module Vidibus
       protected
 
       # Creates this service and, unless it has already been set up, a Connector service.
-      # Once this service has been created, a secret will be traded for given nonce.
+      # Once this service has been created, a secret will be traded for the given nonce.
       def post
         unless this = service.where(:this => true, :realm => nil).first
           unless connector = service.local(:connector)
