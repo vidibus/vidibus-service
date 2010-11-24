@@ -97,10 +97,14 @@ module Vidibus
       # Deletes services by their UUID.
       def delete
         verify_request!
-        raise ArgumentError.new("Provide list of :uuids") unless uuids = @request.params["uuids"]
+        unless uuids = @request.params["uuids"]
+          raise "Provide list of UUIDs of services to delete."
+        end
         for uuid in uuids
-          if found = service.where(:uuid => uuid).first
-            found.destroy
+          _service = service.where(:uuid => uuid).first
+          next unless _service
+          unless _service.destroy
+            raise "Deleting service #{uuid} failed: #{_service.errors.full_messages}"
           end
         end
         response(:success => "Services have been deleted.")

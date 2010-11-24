@@ -234,7 +234,15 @@ describe "Vidibus::Service::ConnectorApp" do
       this and connector
       signed_request(:delete, "http://manager.local/connector", {})
       last_response.status.should eql(400)
-      last_response.body.should eql(%({"error":"Provide list of :uuids"}))
+      last_response.body.should eql(%({"error":"Provide list of UUIDs of services to delete."}))
+    end
+
+    it "should fail if deleting of a service fails" do
+      this and connector
+      stub.any_instance_of(Service).destroy {false} # Would be nice: errors.add(:base, "Failed")
+      signed_request(:delete, "http://manager.local/connector", {:uuids =>["60dfef509a8e012d599558b035f038ab"]})
+      last_response.status.should eql(400)
+      last_response.body.should eql(%({"error":"Deleting service 60dfef509a8e012d599558b035f038ab failed: "}))
     end
 
     it "should delete services given by UUID" do
