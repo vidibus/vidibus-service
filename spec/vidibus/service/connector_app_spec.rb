@@ -180,26 +180,33 @@ describe "Vidibus::Service::ConnectorApp" do
     it "should update existing services" do
       this and connector
       url = "http://newconnector.local"
-      signed_request(:put, "http://manager.local/connector", {:connector => {:url => url}})
+      signed_request(:put, "http://manager.local/connector", {connector.uuid => {:url => url}})
       last_response.status.should eql(200)
       Service.local(:connector).url.should eql(url)
     end
 
-    it "should fail if invalid data are given" do
+    it "should fail if no uuid is given" do
       this and connector
       url = "http://newconnector.local"
-      signed_request(:put, "http://manager.local/connector", {:connector => {:secret => "not allowed"}})
+      signed_request(:put, "http://manager.local/connector", {:url => url})
       last_response.status.should eql(400)
-      last_response.body.should match("Updating connector failed:")
+      last_response.body.should match("Updating failed: 'url' is not a valid UUID.")
     end
 
-    it "should create new services" do
+    it "should fail if an invalid uuid is given" do
       this and connector
       url = "http://newconnector.local"
-      signed_request(:put, "http://manager.local/connector",
-        {:uploader => {:url => "http://uploader.local", :uuid => "c0861d609247012d0a8b58b035f038ab", :secret => "A7q8Vzxgrk9xrw2FCnvV4bv01UP/LBUUM0lIGDmMcB2GsBTIqx", :realm_uuid => "12ab69f099a4012d4df558b035f038ab"}})
-      last_response.status.should eql(200)
-      Service.local(:uploader, "12ab69f099a4012d4df558b035f038ab").url.should eql("http://uploader.local")
+      signed_request(:put, "http://manager.local/connector", {"c0861d609247012d0a8b58b035f038ab" => {:url => url}})
+      last_response.status.should eql(400)
+      last_response.body.should match("Updating service c0861d609247012d0a8b58b035f038ab failed:")
+    end
+
+    it "should fail if invalid data is given" do
+      this and connector
+      url = "http://newconnector.local"
+      signed_request(:put, "http://manager.local/connector", {connector.uuid => {:secret => "not allowed"}})
+      last_response.status.should eql(400)
+      last_response.body.should match("Updating service 60dfef509a8e012d599558b035f038ab failed:")
     end
   end
 

@@ -75,14 +75,18 @@ module Vidibus
       end
 
       # Updates data of given services.
-      # If a service does not exist, it will be created.
       def put
         verify_request!
-        for function, attributes in @request.params.except("sign")
-          _service = service.local(function) || service.new(:function => function)
+        for uuid, attributes in @request.params.except("sign")
+          unless Vidibus::Uuid.validate(uuid)
+            return response(:error => "Updating failed: '#{uuid}' is not a valid UUID.")
+          end
+          unless _service = service.where(:uuid => uuid).first
+            return response(:error => "Updating service #{uuid} failed: This service does not exist!")
+          end
           _service.attributes = attributes
           unless _service.save
-            return response(:error => "Updating #{function} failed: #{_service.errors.full_messages}")
+            return response(:error => "Updating service #{uuid} failed: #{_service.errors.full_messages}")
           end
         end
         response(:success => "Services updated.")
