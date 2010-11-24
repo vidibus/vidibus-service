@@ -2,6 +2,16 @@
 
 Description goes here.
 
+
+== Requirements
+
+In order to work properly this gem needs the route /connector to call a Rack app. Usually this route gets provided automatically but that may fail if your application has some sort of catch-all route. To check if the route works as expected, just call http://yourapp.com/connector and expect an error message like +This service has not been configured yet. Use your Connector to set it up.+
+
+If you don't see this error message, add the route manually at the top of your routes.rb:
+
+  match "/connector" => Vidibus::Service::ConnectorApp
+
+
 == Note on Patches/Pull Requests
  
 * Fork the project.
