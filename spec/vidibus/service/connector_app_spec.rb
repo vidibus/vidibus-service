@@ -2,11 +2,19 @@ require "spec_helper.rb"
 
 describe "Vidibus::Service::ConnectorApp" do
   include Rack::Test::Methods
+  let(:this_uuid) {"344b4b8088fb012dd3e558b035f038ab"}
+  let(:this_uri) {"https://connector.local/services/#{this_uuid}/secret"}
+  let(:connector_uuid) {"60dfef509a8e012d599558b035f038ab"}
 
-  let(:this_params) { {"uuid" => "344b4b8088fb012dd3e558b035f038ab", "url" => "http://manager.local", "function" => "manager"} }
-  let(:connector_params) { {"uuid" => "60dfef509a8e012d599558b035f038ab", "url" => "https://connector.local"} }
-  let(:this) { Service.create!(this_params.merge(:secret => "EaDai5nz16DbQTWQuuFdd4WcAiZYRPDwZTn2IQeXbPE4yBg3rr", :realm_uuid => nil, :this => true)) }
-  let(:connector) { Service.create!(connector_params.merge(:function => "connector", :secret => nil, :realm_uuid => nil)) }
+  let(:nonce) {"hkO2ssb28Gks19s9h2hdhbBs83hdis"}
+  let(:secret) {"EaDai5nz16DbQTWQuuFdd4WcAiZYRPDwZTn2IQeXbPE4yBg3rr"}
+  let(:encrypted_secret) {Vidibus::Secure.encrypt(secret, nonce)}
+  let(:signature) {Vidibus::Secure.sign(encrypted_secret, nonce)}
+
+  let(:this_params) {{:uuid => this_uuid, :url => "http://manager.local", :function => "manager", :this => true}}
+  let(:connector_params) {{:uuid => connector_uuid, :url => "https://connector.local", :function => "connector", :secret => nil, :realm_uuid => nil}}
+  let(:this) {Service.create!(this_params.merge(:secret => "EaDai5nz16DbQTWQuuFdd4WcAiZYRPDwZTn2IQeXbPE4yBg3rr", :realm_uuid => nil))}
+  let(:connector) {Service.create!(connector_params)}
 
   def app
     @app ||= Vidibus::Service::ConnectorApp
@@ -70,83 +78,107 @@ describe "Vidibus::Service::ConnectorApp" do
       this
       post "http://manager/connector", {}
       last_response.status.should eql(400)
-      last_response.body.should eql(%({"error":"Service has already been set up."}))
+      last_response.body.should match("This service has already been set up.")
     end
 
-    it "should require Connector params" do
-      post "http://manager.local/connector"
-      last_response.status.should eql(400)
-      last_response.body.should eql(%({"error":"No Connector data given."}))
+    context "without Connector or Connector params" do
+      it "should require Connector params" do
+        post "http://manager.local/connector"
+        last_response.status.should eql(400)
+        last_response.body.should match("No Connector data given.")
+      end
     end
 
-    it "should fail if Connector data is invalid" do
-      post "http://manager.local/connector", {:connector => {:some => "thing"}}
-      last_response.status.should eql(400)
-      last_response.body.should match("Setting up the Connector failed:")
+    context "with Connector params" do
+      before {stub.any_instance_of(Vidibus::Service::ConnectorApp).create_this!}
+
+      it "should fail if params are invalid given" do
+        post "http://manager.local/connector", {connector_uuid => connector_params.except(:url)}
+        last_response.status.should eql(400)
+        last_response.body.should match("Setting up the Connector failed:")
+      end
+
+      it "should set up a Connector with valid params" do
+        post "http://manager.local/connector", {connector_uuid => connector_params}
+        last_response.status.should eql(201)
+        connector = Service.where(:uuid => connector_params[:uuid]).first
+        connector.should be_a(Service)
+      end
+
+      it "should accept any value as key" do
+        post "http://manager.local/connector", {"something" => connector_params}
+        last_response.status.should eql(201)
+      end
+
+      it "should not create another connector if one already exists" do
+        connector
+        post "http://manager.local/connector", {connector_uuid => connector_params}
+        last_response.status.should eql(201)
+      end
     end
 
-    it "should set up a Connector" do
-      mock(::Service).new(connector_params.merge(:function => "connector"))
-      expect {
-        post "http://manager.local/connector", {:connector => connector_params}
-      }.to raise_error(NoMethodError, "undefined method `save' for nil:NilClass")
-    end
-
-    context "with Connector or Connector params" do
+    context "with existing Connector" do
+      let(:secret_data) {{"secret" => encrypted_secret, "sign" => signature}}
+      let(:stub_secret_request!) {stub(HTTParty).get(this_uri, :format => :json) {secret_data}}
       before { connector }
 
       it "should not require Connector params if a Connector is present" do
         post "http://manager.local/connector"
-        last_response.body.should_not eql(%({"error":"No Connector data given."}))
+        last_response.body.should_not match("No Connector data given.")
       end
 
       it "should require params for this service" do
         post "http://manager.local/connector"
         last_response.status.should eql(400)
-        last_response.body.should eql(%({"error":"No data for this service given."}))
+        last_response.body.should match("No data given for this service.")
       end
 
       it "should fail if params for this service are invalid" do
-        post "http://manager.local/connector", {:this => {:some => "thing"}}
+        post "http://manager.local/connector", {this_uuid => this_params.except(:function)}
         last_response.status.should eql(400)
         last_response.body.should match("Setting up this service failed:")
       end
 
-      it "should set up this Service" do
-        mock(::Service).new(this_params.merge(:this => true))
-        expect {
-          post "http://manager.local/connector", {:this => this_params}
-        }.to raise_error(NoMethodError, "undefined method `secret=' for nil:NilClass")
+      it "should fail if a secret is given" do
+        post "http://manager.local/connector", {this_uuid => this_params.merge(:secret => "something")}
+        last_response.status.should eql(400)
+        last_response.body.should match("Setting a secret for this service is not allowed!")
+      end
+
+      it "should fail unless a nonce is given" do
+        post "http://manager.local/connector", {this_uuid => this_params}
+        last_response.status.should eql(400)
+        last_response.body.should match("No nonce given.")
       end
 
       it "should request a secret for this Service" do
-        uri = "https://connector.local/services/#{this_params["uuid"]}/secret"
-        stub_http_request(:get, uri).to_return(:status => 200)
-        post "http://manager.local/connector", {:this => this_params}
+        mock(HTTParty).get(this_uri, :format => :json) {{}}
+        stub.any_instance_of(Vidibus::Service::ConnectorApp).decrypt_secret! {"ok"}
+        post "http://manager.local/connector", {this_uuid => this_params.merge(:nonce => nonce)}
       end
 
-      it "should require a valid nonce to decrypt requested secret" do
-        uri = "https://connector.local/services/#{this_params["uuid"]}/secret"
-        params = {}
-        stub_http_request(:get, uri).to_return(:status => 200, :body => %({"secret":"something","sign":"else"}))
-        post "http://manager.local/connector", {:this => this_params.merge("nonce" => "invalid")}
+      it "should fail if sign cannot be validated with nonce" do
+        stub_secret_request!
+        post "http://manager.local/connector", {this_uuid => this_params.merge(:nonce => "invalid")}
         last_response.status.should eql(400)
         last_response.body.should match("Nonce is invalid.")
       end
 
-      it "should decrypt requested secret and store it on the service object" do
-        nonce = "hkO2ssb28Gks19s9h2hdhbBs83hdis"
-        secret = "EaDai5nz16DbQTWQuuFdd4WcAiZYRPDwZTn2IQeXbPE4yBg3rr"
-        encrypted_secret = Vidibus::Secure.encrypt(secret, nonce)
-        signature = Vidibus::Secure.sign(encrypted_secret, nonce)
-        uri = "https://connector.local/services/#{this_params["uuid"]}/secret"
-        params = {:secret => encrypted_secret, :sign => signature}
-        stub_http_request(:get, uri).to_return(:status => 200, :body => params.to_json)
-        post "http://manager.local/connector", {:this => this_params.merge("nonce" => nonce)}
+      it "should decrypt the secret with a valid nonce" do
+        stub_secret_request!
+        mock.any_instance_of(Service).secret=(secret)
+        post "http://manager.local/connector", {this_uuid => this_params.merge(:nonce => nonce)}
+      end
+
+      it "should set up this Service with valid params" do
+        stub_secret_request!
+        post "http://manager.local/connector", {connector_uuid => this_params.merge(:nonce => nonce)}
+        stub(HTTParty).get(this_uri, :format => :json) {secret_data}
         last_response.status.should eql(201)
-        this = ::Service.where(:this => true).first
-        this.should be_a(::Service)
+        this = Service.where(:this => true).first
+        this.should be_a(Service)
         this.secret.should eql(secret)
+        this.url.should eql("http://manager.local")
       end
     end
   end
@@ -240,21 +272,21 @@ describe "Vidibus::Service::ConnectorApp" do
     it "should fail if deleting of a service fails" do
       this and connector
       stub.any_instance_of(Service).destroy {false} # Would be nice: errors.add(:base, "Failed")
-      signed_request(:delete, "http://manager.local/connector", {:uuids =>["60dfef509a8e012d599558b035f038ab"]})
+      signed_request(:delete, "http://manager.local/connector", {:uuids =>[connector_uuid]})
       last_response.status.should eql(400)
       last_response.body.should eql(%({"error":"Deleting service 60dfef509a8e012d599558b035f038ab failed: "}))
     end
 
     it "should delete services given by UUID" do
       this and connector
-      signed_request(:delete, "http://manager.local/connector", {:uuids =>["60dfef509a8e012d599558b035f038ab"]})
+      signed_request(:delete, "http://manager.local/connector", {:uuids =>[connector_uuid]})
       last_response.status.should eql(200)
       Service.local(:connector).should be_nil
     end
 
     it "should not care if any given UUID is invalid" do
       this and connector
-      signed_request(:delete, "http://manager.local/connector", {:uuids =>["invalid", "60dfef509a8e012d599558b035f038ab"]})
+      signed_request(:delete, "http://manager.local/connector", {:uuids =>["invalid", connector_uuid]})
       last_response.status.should eql(200)
     end
   end
