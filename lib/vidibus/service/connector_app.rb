@@ -4,6 +4,8 @@ module Vidibus
   module Service
     class ConnectorApp
       class SignatureError < StandardError; end
+      class ValidationError < StandardError; end
+      class SetupError < StandardError; end
 
       def self.call(env)
         self.new.call(env)
@@ -27,37 +29,14 @@ module Vidibus
       # Creates this service and, unless it has already been set up, a Connector service.
       # Once this service has been created, a secret will be traded for the given nonce.
       def post
-        unless this = service.where(:this => true, :realm => nil).first
-          unless connector = service.local(:connector)
-            connector_data = @request.params["connector"] or
-              return response(:error => "No Connector data given.")
-            connector = service.new(connector_data.merge(:function => "connector"))
-            unless connector.save
-              return response(:error => "Setting up the Connector failed: #{connector.errors.full_messages}")
-            end
-          end
-          this_data = @request.params["this"] or
-            return response(:error => "No data for this service given.")
-          this = service.new(this_data.merge(:this => true))
-          this.secret = "this is just a mock"
-          if this.valid?
-            nonce = @request.params["this"]["nonce"]
-            unless nonce == ""
-              uri = "#{connector.url}/services/#{this.uuid}/secret"
-              res = HTTParty.get(uri, :format => :json)
-            end
-            unless nonce.to_s.length > 5 and Vidibus::Secure.sign(res["secret"], nonce) == res["sign"]
-              return response(:error => "Nonce is invalid.")
-            end
-            this.secret = Vidibus::Secure.decrypt(res["secret"], nonce)
-            if this.save
-              return response({:success => "Setup successful"}, 201)
-            end
-          end
-          response(:error => "Setting up this service failed: #{this.errors.full_messages}")
-        else
-          response(:error => "Service has already been set up.")
+        if service.where(:this => true, :realm => nil).first
+          raise SetupError, "This service has already been set up."
         end
+        service.local(:connector) || create_connector!
+        create_this!
+        response({:success => "Setup successful"}, 201)
+      rescue SetupError => e
+        response(:error => e.message)
       end
 
       # Returns settings of this and Connector.
@@ -114,8 +93,9 @@ module Vidibus
 
       # Verifies that signature is valid.
       def verify_request!
-        Vidibus::Secure.verify_request(@request.request_method, @request.url, @request.params, this.secret) or
+        unless Vidibus::Secure.verify_request(@request.request_method, @request.url, @request.params, this.secret)
           raise SignatureError.new("Invalid signature.")
+        end
       end
 
       # Renders response.
@@ -154,6 +134,56 @@ module Vidibus
       # It will raise an error if this service is unconfigured.
       def connector
         @connector ||= service.connector
+      end
+
+      # Creates Connector service from params containing +function+ "connector".
+      def create_connector!
+        uuid, data = @request.params.select {|k,v| v["function"] == "connector"}.first
+        raise SetupError, "No Connector data given." unless data
+        connector = service.new(data)
+        unless connector.save
+          raise SetupError, "Setting up the Connector failed: #{connector.errors.full_messages}"
+        end
+        connector
+      end
+
+      # Creates this service from params containing "this".
+      def create_this!
+        uuid, data = @request.params.select {|k,v| v["this"] == "true"}.first
+        raise SetupError, "No data given for this service." unless data
+
+        this = service.new(data)
+        this.valid?
+        raise ValidationError unless this.errors.except(:secret).empty?
+
+        set_secret!(this)
+        this.save or raise ValidationError
+      rescue ValidationError
+        raise SetupError, "Setting up this service failed: #{this.errors.full_messages}"
+      end
+
+      # Trades given nonce for secret.
+      def set_secret!(service)
+        raise SetupError, "Setting a secret for this service is not allowed!" if service.secret
+        nonce = service.nonce
+        raise SetupError, "No nonce given." unless nonce and nonce != ""
+
+        fetched = fetch_secret(service)
+        service.secret = decrypt_secret!(fetched["secret"], nonce, fetched["sign"])
+      end
+
+      # Requests encrypted secret for given service from Connector.
+      def fetch_secret(service)
+        uri = "#{connector.url}/services/#{service.uuid}/secret"
+        HTTParty.get(uri, :format => :json)
+      end
+
+      # Decrypts secret with nonce.++
+      def decrypt_secret!(secret, nonce, sign)
+        unless Vidibus::Secure.sign(secret, nonce) == sign
+          raise SetupError, "Nonce is invalid."
+        end
+        Vidibus::Secure.decrypt(secret, nonce)
       end
     end
   end
