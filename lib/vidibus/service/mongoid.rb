@@ -14,6 +14,7 @@ module Vidibus
         field :realm_uuid
         field :this, :type => Boolean
 
+        attr_accessor :nonce
         attr_encrypted :secret
 
         validates :url, :uri => {:protocol => [:http, :https], :accessible => false}
