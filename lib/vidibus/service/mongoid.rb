@@ -67,6 +67,15 @@ module Vidibus
           url.gsub(/https?:\/\//, "") if url
         end
 
+        # Returns true if given client_secret matches signature.
+        # This method is called from Vidibus' OauthServer when issuing an OAuth token.
+        # To prevent sending the service's secret over the network, the ConnectorClient
+        # sends a signature instead.
+        # TODO: Where to put this method?
+        def valid_oauth2_secret?(client_secret)
+          client_secret == Vidibus::Secure.sign("#{self.class.this.url}#{uuid}", secret)
+        end
+
         protected
 
         # Returns a Client for current service.
