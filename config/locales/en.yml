@@ -1,5 +1,4 @@
 en:
-  activemodel:
-    errors:
-      messages:
-        secret_not_allowed_for_connector: "is not allowed for a Connector"
+  errors:
+    messages:
+      secret_not_allowed_for_connector: "is not allowed for a Connector"
