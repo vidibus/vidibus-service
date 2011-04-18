@@ -15,6 +15,8 @@ describe "Vidibus::Service::ConnectorApp" do
   let(:connector_params) {{:uuid => connector_uuid, :url => "https://connector.local", :function => "connector", :secret => nil, :realm_uuid => nil}}
   let(:this) {Service.create!(this_params.merge(:secret => "EaDai5nz16DbQTWQuuFdd4WcAiZYRPDwZTn2IQeXbPE4yBg3rr", :realm_uuid => nil))}
   let(:connector) {Service.create!(connector_params)}
+  let(:uploader_params) {{:uuid => "c0861d609247012d0a8b58b035f038ab", :url => "http://uploader.local", :function => "uploader"}}
+  let(:uploader) {Service.create!(uploader_params.merge(:secret => "whatever", :realm_uuid => "408411702613012e39ec58b035f038ab"))}
 
   def app
     @app ||= Vidibus::Service::ConnectorApp
@@ -209,12 +211,37 @@ describe "Vidibus::Service::ConnectorApp" do
       last_response.status.should eql(400)
     end
 
-    it "should update existing services" do
+    it "should update an existing service without realm_uuid" do
       this and connector
       url = "http://newconnector.local"
       signed_request(:put, "http://manager.local/connector", {connector.uuid => {:url => url}})
       last_response.status.should eql(200)
       Service.local(:connector).url.should eql(url)
+    end
+
+    it "should update an existing service with given realm_uuid" do
+      this and connector and uploader
+      url = "http://newuploader.local"
+      signed_request(:put, "http://manager.local/connector", {uploader.uuid => {:url => url, :realm_uuid => uploader.realm_uuid}})
+      last_response.status.should eql(200)
+      Service.local(:uploader, uploader.realm_uuid).url.should eql(url)
+    end
+
+    it "should not update existing services with a different realm_uuid" do
+      this and connector and uploader
+      different_realm_uuid = "e75234809111012d05ac58b035f038ab"
+      different_uploader = Service.create!(uploader_params.merge(:secret => "whatever", :realm_uuid => different_realm_uuid))
+      signed_request(:put, "http://manager.local/connector", {uploader.uuid => {:url => "http://newuploader.local", :realm_uuid => uploader.realm_uuid}})
+      last_response.status.should eql(200)
+      Service.local(:uploader, different_realm_uuid).url.should eql(different_uploader.url)
+    end
+
+    it "should update all existing services with matching uuid" do
+      this and connector and uploader
+      another_uploader = Service.create!(uploader_params.merge(:realm_uuid => "e75234809111012d05ac58b035f038ab", :secret => "whatever"))
+      signed_request(:put, "http://manager.local/connector", {uploader.uuid => {:function => "fancy"}})
+      last_response.status.should eql(200)
+      Service.where(:function => "fancy").to_a.should have(2).services
     end
 
     it "should fail if no uuid is given" do

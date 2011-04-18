@@ -60,12 +60,19 @@ module Vidibus
           unless Vidibus::Uuid.validate(uuid)
             raise "Updating failed: '#{uuid}' is not a valid UUID."
           end
-          unless _service = service.where(:uuid => uuid).first
+          conditions = {:uuid => uuid}
+          if realm_uuid = attributes.delete("realm_uuid")
+            conditions[:realm_uuid] = realm_uuid
+          end
+          result = service.where(conditions)
+          unless result.any?
             raise "Updating service #{uuid} failed: This service does not exist!"
           end
-          _service.attributes = attributes
-          unless _service.save
-            raise "Updating service #{uuid} failed: #{_service.errors.full_messages}"
+          for _service in result
+            _service.attributes = attributes
+            unless _service.save
+              raise "Updating service #{uuid} failed: #{_service.errors.full_messages}"
+            end
           end
         end
         response(:success => "Services updated.")
