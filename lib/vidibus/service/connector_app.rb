@@ -41,7 +41,7 @@ module Vidibus
 
       # Returns settings of this and Connector.
       # This action must only be called by Connector. Thus it is signed
-      # with the Service's secret.
+      # with the service's secret.
       def get
         verify_request!
         out = {:this => this.public_data}
@@ -98,7 +98,7 @@ module Vidibus
         response(:error => e.message)
       end
 
-      # Verifies that signature is valid.
+      # Verifies that the signature is valid.
       def verify_request!
         unless Vidibus::Secure.verify_request(@request.request_method, @request.url, @request.params, this.secret)
           raise SignatureError.new("Invalid signature.")
