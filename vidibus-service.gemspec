@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{vidibus-service}
-  s.version = "0.0.5"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andre Pankratz"]
-  s.date = %q{2011-04-18}
+  s.date = %q{2011-05-04}
   s.description = %q{Description...}
   s.email = %q{andre@vidibus.com}
   s.extra_rdoc_files = [
@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
     ".document",
     ".rspec",
     "Gemfile",
-    "Gemfile.lock",
     "LICENSE",
     "README.rdoc",
     "Rakefile",
@@ -61,7 +60,6 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<mongoid>, ["~> 2.0.0"])
-      s.add_runtime_dependency(%q<bson_ext>, ["~> 1.3"])
       s.add_runtime_dependency(%q<vidibus-core_extensions>, [">= 0"])
       s.add_runtime_dependency(%q<vidibus-secure>, [">= 0"])
       s.add_runtime_dependency(%q<vidibus-uuid>, [">= 0"])
@@ -76,7 +74,6 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<webmock>, [">= 0"])
     else
       s.add_dependency(%q<mongoid>, ["~> 2.0.0"])
-      s.add_dependency(%q<bson_ext>, ["~> 1.3"])
       s.add_dependency(%q<vidibus-core_extensions>, [">= 0"])
       s.add_dependency(%q<vidibus-secure>, [">= 0"])
       s.add_dependency(%q<vidibus-uuid>, [">= 0"])
@@ -92,7 +89,6 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<mongoid>, ["~> 2.0.0"])
-    s.add_dependency(%q<bson_ext>, ["~> 1.3"])
     s.add_dependency(%q<vidibus-core_extensions>, [">= 0"])
     s.add_dependency(%q<vidibus-secure>, [">= 0"])
     s.add_dependency(%q<vidibus-uuid>, [">= 0"])
