@@ -1,7 +1,6 @@
 source :rubygems
 
 gem "mongoid", "~> 2.0.0"
-gem "bson_ext", "~> 1.3"
 gem "vidibus-core_extensions"
 gem "vidibus-secure"
 gem "vidibus-uuid"
