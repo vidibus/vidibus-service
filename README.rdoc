@@ -11,6 +11,9 @@ If you don't see this error message, add the route manually at the top of your r
 
   match "/connector" => Vidibus::Service::ConnectorApp
 
+== TODO
+
+* ControllerValidations: Setting @service and @realm is inconsistent; @service is a service object, @realm is a string
 
 == Note on Patches/Pull Requests
  
