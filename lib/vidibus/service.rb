@@ -1,13 +1,8 @@
-module Vidibus # :nodoc
-  module Service # :nodoc
-    class Error < StandardError; end
-  end
-end
-
-require "service/client"
-require "service/mongoid"
-require "service/connector_app"
-require "service/controller_validations"
+require "vidibus/service/errors"
+require "vidibus/service/client"
+require "vidibus/service/mongoid"
+require "vidibus/service/connector_app"
+require "vidibus/service/controller_validations"
 
 # Shorthand for Service.discover
 def Service(wanted, realm)
