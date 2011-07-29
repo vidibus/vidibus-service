@@ -1,11 +1,9 @@
-# require "rails"
 require "vidibus-secure"
 require "vidibus-validate_uri"
 require "vidibus-uuid"
 require "vidibus-core_extensions"
 
-$:.unshift(File.join(File.dirname(__FILE__), "vidibus"))
-require "service"
+require "vidibus/service"
 
 if defined?(Rails)
   module Vidibus::Service

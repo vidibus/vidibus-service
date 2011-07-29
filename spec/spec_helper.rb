@@ -6,6 +6,7 @@ require "active_support/core_ext"
 require "rspec"
 require "rr"
 require "mongoid"
+require "rack/test"
 require "webmock/rspec"
 
 require "vidibus-service"
