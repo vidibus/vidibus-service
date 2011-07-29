@@ -24,7 +24,7 @@ describe Vidibus::Service::Client do
   describe "#get" do
     it "should load data via GET" do
       stub_http_request(:get, "http://uploader.local/success").
-        with(:query => {:realm => uploader.realm_uuid, :service => this.uuid, :sign => "43a4d004c55113131f198c9772760467727b5564de74aacfcf4686751e3d388a"}).
+        with(:query => {:realm => uploader.realm_uuid, :service => this.uuid, :sign => "992a345de059df951ce517f9ad0dc9e3ae2f95a78fe6d140c24cbcc1d7a1840b"}).
           to_return(:status => 200, :body => %({"hot":"stuff"}))
       response = client.get("/success")
       response.code.should eql(200)
@@ -33,7 +33,7 @@ describe Vidibus::Service::Client do
 
     it "should handle non-JSON responses" do
       stub_http_request(:get, "http://uploader.local/success").
-        with(:query => {:realm => uploader.realm_uuid, :service => this.uuid, :sign => "43a4d004c55113131f198c9772760467727b5564de74aacfcf4686751e3d388a"}).
+        with(:query => {:realm => uploader.realm_uuid, :service => this.uuid, :sign => "992a345de059df951ce517f9ad0dc9e3ae2f95a78fe6d140c24cbcc1d7a1840b"}).
           to_return(:status => 200, :body => "something")
       response = client.get("/success")
       response.code.should eql(200)
@@ -44,7 +44,7 @@ describe Vidibus::Service::Client do
   describe "#post" do
     it "should send data via POST" do
       stub_http_request(:post, "http://uploader.local/create").
-        with(:body => {:some => "thing", :realm => uploader.realm_uuid, :service => this.uuid, :sign => "9c16bc080f106c73f28813f02899be97301b1b627d25a65d52f68a3c9732559d"}).
+        with(:body => {:some => "thing", :realm => uploader.realm_uuid, :service => this.uuid, :sign => "2b8754f4e790d0a91ff955e4f599a9cacd84e73a93c2825962afbe738158ccdb"}).
           to_return(:status => 200)
       response = client.post("/create", :body => {:some => "thing"})
       response.code.should eql(200)
@@ -54,7 +54,7 @@ describe Vidibus::Service::Client do
   describe "#put" do
     it "should send data via PUT" do
       stub_http_request(:put, "http://uploader.local/update").
-        with(:body => {:some => "thing", :realm => uploader.realm_uuid, :service => this.uuid, :sign => "57e75433e49d9ef160b03b9e6a7d91fbd6523471eb8e7e36bb861066101f0903"}).
+        with(:body => {:some => "thing", :realm => uploader.realm_uuid, :service => this.uuid, :sign => "1c498f6dab0eedd9d14a69e2a0d508366158a80cf40aea4130e311ce9485012c"}).
           to_return(:status => 200)
       response = client.put("/update", :body => {:some => "thing"})
       response.code.should eql(200)
@@ -64,7 +64,7 @@ describe Vidibus::Service::Client do
   describe "#delete" do
     it "should send a DELETE request" do
       stub_http_request(:delete, "http://uploader.local/record/123").
-        with(:query => {:realm => uploader.realm_uuid, :service => this.uuid, :sign => "b9c026563d950a719e168c6f072f75c13f4843b82274f57f6e5a9a4cd8e0cc64"}).
+        with(:query => {:realm => uploader.realm_uuid, :service => this.uuid, :sign => "fbdbd124c9ec526fe2fc382a77ead820bedda586acf68de6e442e523a384bd44"}).
           to_return(:status => 200)
       response = client.delete("/record/123")
       response.code.should eql(200)

@@ -204,7 +204,7 @@ describe "Vidibus::Service::Mongoid" do
     it "should fetch service data from Connector and create a local service object" do
       connector and this
       stub_http_request(:get, "http://connector.local/services/uploader").
-        with(:query => {:realm => "12ab69f099a4012d4df558b035f038ab", :service => "344b4b8088fb012dd3e558b035f038ab", :sign => "d27be37e9440765d38789f9000a5b3a86c741b3954c88f7b1769e4067ac9fbd0"}).
+        with(:query => {:realm => "12ab69f099a4012d4df558b035f038ab", :service => "344b4b8088fb012dd3e558b035f038ab", :sign => "3ce01bdae12c9127af716f5ae090e1983505f857149215cdd53e90e46622ff7c"}).
          to_return(:status => 200, :body => %({"uuid":"c0861d609247012d0a8b58b035f038ab", "url":"http://uploader.local", "function":"uploader", "secret":"kjO8AjgX68Yp7OQ1XF8dTfPBE5GCuCnd/OPko+A9yCaw8qnj9xoyMGZEXQpf\niVBOUcux1qlW8hfT6UPKGoVfYA==\n"}))
       Service.remote(:uploader, realm)
 
@@ -218,7 +218,7 @@ describe "Vidibus::Service::Mongoid" do
     it "should raise an error requested service has already been stored" do
       connector and this and uploader
       stub_http_request(:get, "http://connector.local/services/uploader").
-        with(:query => {:realm => "e75234809111012d05ac58b035f038ab", :service => "973a8710926e012d0a8c58b035f038ab", :sign => "a93d3a1a0124e969f97d68feab37638ec8737b1d8ddc582cd204fbb228ad7e2b"}).
+        with(:query => {:realm => "12ab69f099a4012d4df558b035f038ab", :service => "344b4b8088fb012dd3e558b035f038ab", :sign => "3ce01bdae12c9127af716f5ae090e1983505f857149215cdd53e90e46622ff7c"}).
          to_return(:status => 200, :body => %({"uuid":"c0861d609247012d0a8b58b035f038ab", "url":"http://uploader.local", "function":"uploader", "secret":"kjO8AjgX68Yp7OQ1XF8dTfPBE5GCuCnd/OPko+A9yCaw8qnj9xoyMGZEXQpf\niVBOUcux1qlW8hfT6UPKGoVfYA==\n"}))
       expect { Service.remote(:uploader, realm) }.to raise_error
     end
