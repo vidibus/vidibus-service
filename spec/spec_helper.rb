@@ -8,6 +8,7 @@ require "rr"
 require "mongoid"
 require "rack/test"
 require "webmock/rspec"
+require "ostruct"
 
 require "vidibus-service"
 require "app/models/service"

@@ -182,6 +182,18 @@ describe "Vidibus::Service::ConnectorApp" do
         this.secret.should eql(secret)
         this.url.should eql("http://manager.local")
       end
+
+      it "should work if ActiveModel::Errors has a messages method (Rails >= 3.0.9)" do
+        stub.any_instance_of(OpenStruct).add_on_blank
+        stub(ActiveModel::Errors).new {OpenStruct.new(:messages => {:secret=>["can't be blank"]})}
+        expect {post("http://manager.local/connector", {this_uuid => this_params})}.not_to raise_exception
+      end
+
+      it "should work if ActiveModel::Errors does not have a messages method (Rails < 3.0.9)" do
+        stub.any_instance_of(Hash).add_on_blank
+        stub(ActiveModel::Errors).new {Hash.new(:secret=>["can't be blank"])}
+        expect {post("http://manager.local/connector", {this_uuid => this_params})}.not_to raise_exception
+      end
     end
   end
 
