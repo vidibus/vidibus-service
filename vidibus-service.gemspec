@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency "vidibus-secure"
   s.add_dependency "vidibus-uuid"
   s.add_dependency "vidibus-validate_uri"
-  s.add_dependency "httparty"
+  s.add_dependency "httparty", "0.7.8"
   s.add_dependency "json"
 
   s.add_development_dependency "bundler", ">= 1.0.0"
