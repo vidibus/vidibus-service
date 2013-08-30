@@ -37,26 +37,6 @@ module Vidibus
           @is_connector ||= function == "connector"
         end
 
-        # Sends a GET request to given path.
-        def get(path, options = {})
-          client.get(path, options)
-        end
-
-        # Sends a POST request to given path.
-        def post(path, options = {})
-          client.post(path, options)
-        end
-
-        # Sends a PUT request to given path.
-        def put(path, options = {})
-          client.put(path, options)
-        end
-
-        # Sends a DELETE request to given path.
-        def delete(path, options = {})
-          client.delete(path, options)
-        end
-
         # Returns publicly requestable data.
         def public_data
           attributes.only(%w[uuid function url])
@@ -128,7 +108,7 @@ module Vidibus
           unless realm
             raise ArgumentError.new("Please provide a valid realm to discover an appropriate service.")
           end
-          if response = connector.get("/services/#{wanted}", :query => {:realm => realm})
+          if response = connector.client.get("/services/#{wanted}", :query => {:realm => realm})
             secret = response["secret"] || raise(ConnectorError.new("The Connector did not return a secret for #{wanted}. Response was: #{response.parsed_response.inspect}"))
             secret = Vidibus::Secure.decrypt(secret, this.secret)
             attributes = response.only(%w[uuid function url]).merge(:realm_uuid => realm, :secret => secret)

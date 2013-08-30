@@ -102,34 +102,6 @@ describe "Vidibus::Service::Mongoid" do
     end
   end
 
-  describe "#get" do
-    it "should trigger a GET request" do
-      client_mock.get("/something", :query => { :gotta => "give" })
-      uploader.get("/something", :query => { :gotta => "give" })
-    end
-  end
-
-  describe "#post" do
-    it "should trigger a POST request" do
-      client_mock.post("/something", :query => { :do => "it" })
-      uploader.post("/something", :query => { :do => "it" })
-    end
-  end
-
-  describe "#put" do
-    it "should trigger a PUT request" do
-      client_mock.put("/something", :query => { :new => "stuff" })
-      uploader.put("/something", :query => { :new => "stuff" })
-    end
-  end
-
-  describe "#delete" do
-    it "should trigger a DELETE request" do
-      client_mock.delete("/something/else", {})
-      uploader.delete("/something/else")
-    end
-  end
-
   describe ".this" do
     it "should return this service" do
       this
