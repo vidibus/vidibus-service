@@ -182,6 +182,13 @@ describe "Vidibus::Service::ConnectorApp" do
         this.secret.should eql(secret)
         this.url.should eql("http://manager.local")
       end
+
+      it "should fail if service data is invalid" do
+        params = this_params.merge('uuid' => 'invalid')
+        post("http://manager.local/connector", {this_uuid => params})
+        last_response.status.should eql(400)
+        last_response.body.should match("Setting up this service failed:")
+      end
     end
   end
 
