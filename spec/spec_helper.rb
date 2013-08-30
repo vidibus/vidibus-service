@@ -1,5 +1,4 @@
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
+$:.unshift File.expand_path('../../', __FILE__)
 
 require "rubygems"
 require "active_support/core_ext"
