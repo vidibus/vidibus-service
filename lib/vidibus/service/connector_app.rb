@@ -161,9 +161,9 @@ module Vidibus
 
         this = service.new(data)
         this.valid?
-        errors = this.errors.respond_to?(:messages) ? this.errors.messages : this.errors # Support Rails < 3.0.9
-        raise ValidationError unless errors.except(:secret).empty?
-
+        unless this.errors.messages.except(:secret).empty?
+          raise ValidationError
+        end
         set_secret!(this)
         this.save or raise ValidationError
       rescue ValidationError
