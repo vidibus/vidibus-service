@@ -86,7 +86,9 @@ module Vidibus
 
         # Sets an error if secret is given for Connector service.
         def dont_allow_secret_for_connector
-          errors.add(:secret, :secret_not_allowed_for_connector) if connector? and secret
+          if connector? && secret
+            errors.add(:secret, :secret_not_allowed_for_connector)
+          end
         end
       end
 
