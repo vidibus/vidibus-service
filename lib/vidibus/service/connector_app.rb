@@ -90,7 +90,7 @@ module Vidibus
           _service = service.where(:uuid => uuid).first
           next unless _service
           unless _service.destroy
-            raise "Deleting service #{uuid} failed: #{_service.errors.full_messages}"
+            raise "Deleting service #{uuid} failed: #{_service.errors.full_messages.join(',')}"
           end
         end
         response(:success => "Services have been deleted.")
