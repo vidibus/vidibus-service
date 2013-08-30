@@ -1,4 +1,4 @@
-# Vidibus::Service [![](http://travis-ci.org/vidibus/vidibus-service.png)](http://travis-ci.org/vidibus/vidibus-service) [![](http://stillmaintained.com/vidibus/vidibus-service.png)](http://stillmaintained.com/vidibus/vidibus-service)
+# Vidibus::Service [![](http://travis-ci.org/vidibus/vidibus-service.png)](http://travis-ci.org/vidibus/vidibus-service)
 
 DESCRIBE
 
@@ -12,11 +12,11 @@ Add `gem "vidibus-service"` to your Gemfile. Then call `bundle install` on your 
 
 ##  Requirements
 
-In order to work properly this gem needs the route /connector to call a Rack app. Usually this 
-route gets provided automatically but that may fail if your application has some sort of catch-all 
-route. To check if the route works as expected, just call http://yourapp.com/connector and expect 
+In order to work properly this gem needs the route /connector to call a Rack app. Usually this
+route gets provided automatically but that may fail if your application has some sort of catch-all
+route. To check if the route works as expected, just call http://yourapp.com/connector and expect
 an error message like this:
-  
+
 ```
 This service has not been configured yet. Use your Connector to set it up.
 ```
@@ -35,4 +35,4 @@ DESCRIBE
 
 ## Copyright
 
-&copy; 2010-2011 Andre Pankratz. See LICENSE for details.
+&copy; 2010-2013 Andre Pankratz. See LICENSE for details.
