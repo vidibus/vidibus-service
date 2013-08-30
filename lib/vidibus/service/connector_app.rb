@@ -86,11 +86,13 @@ module Vidibus
         unless uuids = @request.params["uuids"]
           raise "Provide list of UUIDs of services to delete."
         end
-        for uuid in uuids
-          _service = service.where(:uuid => uuid).first
-          next unless _service
-          unless _service.destroy
-            raise "Deleting service #{uuid} failed: #{_service.errors.full_messages.join(',')}"
+
+        uuids.each do |uuid|
+          obj = service.where(:uuid => uuid).first
+          next unless obj
+          unless obj.destroy
+            errors = obj.errors.full_messages.join(',')
+            raise "Deleting service #{uuid} failed: #{errors}"
           end
         end
         response(:success => "Services have been deleted.")
