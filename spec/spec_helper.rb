@@ -18,17 +18,15 @@ require "vidibus-service"
 require "app/models/service"
 
 Mongoid.configure do |config|
-  name = "vidibus-service_test"
-  host = "localhost"
-  config.master = Mongo::Connection.new.db(name)
-  config.logger = nil
+  config.connect_to('vidibus-service_test')
 end
 
 RSpec.configure do |config|
   config.include WebMock::API
   config.mock_with :rr
   config.before(:each) do
-    Mongoid.master.collections.select {|c| c.name !~ /system/}.each(&:drop)
+    Mongoid::Sessions.default.collections.
+      select {|c| c.name !~ /system/}.each(&:drop)
   end
 end
 
