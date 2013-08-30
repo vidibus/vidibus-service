@@ -47,6 +47,11 @@ module Vidibus
           url.gsub(/https?:\/\//, "") if url
         end
 
+        # Returns a Client for current service.
+        def client
+          @client ||= Client.new(self)
+        end
+
         # Returns true if given client_secret matches signature.
         # This method is called from Vidibus' OauthServer when issuing an OAuth token.
         # To prevent sending the service's secret over the network, the ConnectorClient
@@ -58,11 +63,6 @@ module Vidibus
         end
 
         protected
-
-        # Returns a Client for current service.
-        def client
-          @client ||= Client.new(self)
-        end
 
         # Sets an error if secret is given for Connector service.
         def dont_allow_secret_for_connector

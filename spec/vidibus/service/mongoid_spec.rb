@@ -102,6 +102,14 @@ describe "Vidibus::Service::Mongoid" do
     end
   end
 
+  describe "#client" do
+    it "should return a client for this service" do
+      client = Object.new
+      stub(Vidibus::Service::Client).new(uploader) { client }
+      uploader.client.should eq(client)
+    end
+  end
+
   describe ".this" do
     it "should return this service" do
       this
