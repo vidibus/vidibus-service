@@ -26,7 +26,8 @@ describe "Vidibus::Service::ConnectorApp" do
 
   # Sends a signed request.
   def signed_request(method, url, params = nil)
-    self.send(method, *Vidibus::Secure.sign_request(method, url, params, this.secret))
+    args = Vidibus::Secure.sign_request(method, url, params, this.secret)
+    self.send(method, *args)
   end
 
   it "should fail for request methods other than GET, POST, PUT, and DELETE" do
@@ -309,8 +310,9 @@ describe "Vidibus::Service::ConnectorApp" do
       this and connector
       stub.any_instance_of(Service).destroy {false} # Would be nice: errors.add(:base, "Failed")
       signed_request(:delete, endpoint, {:uuids =>[connector_uuid]})
+      msg = %({"error":"Deleting service 60dfef509a8e012d599558b035f038ab failed: "})
       last_response.status.should eql(400)
-      last_response.body.should eql(%({"error":"Deleting service 60dfef509a8e012d599558b035f038ab failed: "}))
+      last_response.body.should eq(msg)
     end
 
     it "should delete services given by UUID" do
