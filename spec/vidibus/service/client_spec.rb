@@ -49,13 +49,18 @@ describe Vidibus::Service::Client do
   end
 
   describe '#get' do
+    let(:query) do
+      {
+        :realm => uploader.realm_uuid,
+        :service => this.uuid,
+        :sign => '992a345de059df951ce517f9ad0dc9e3ae2f95a78fe6d140c24cbcc1d7a1840b'
+      }
+    end
+
     it 'should load data via GET' do
       stub_http_request(:get, 'http://uploader.local/success').
-        with(:query => {
-          :realm => uploader.realm_uuid,
-          :service => this.uuid,
-          :sign => '992a345de059df951ce517f9ad0dc9e3ae2f95a78fe6d140c24cbcc1d7a1840b'
-        }).to_return(:status => 200, :body => %({'hot':'stuff'}))
+        with(:query => query).
+        to_return(:status => 200, :body => %({'hot':'stuff'}))
       response = client.get('/success')
       response.code.should eql(200)
       response.should eql({'hot' => 'stuff'})
@@ -63,11 +68,8 @@ describe Vidibus::Service::Client do
 
     it 'should handle non-JSON responses' do
       stub_http_request(:get, 'http://uploader.local/success').
-        with(:query => {
-          :realm => uploader.realm_uuid,
-          :service => this.uuid,
-          :sign => '992a345de059df951ce517f9ad0dc9e3ae2f95a78fe6d140c24cbcc1d7a1840b'
-        }).to_return(:status => 200, :body => 'something')
+        with(:query => query).
+        to_return(:status => 200, :body => 'something')
       response = client.get('/success')
       response.code.should eql(200)
       response.should eql('something')
