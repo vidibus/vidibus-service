@@ -57,7 +57,9 @@ module Vidibus
       # Builds URI from base URI of service and given path.
       def build_uri(path)
         path = path.to_s
-        raise("Expected path, got #{path}") unless path.match(/^\//)
+        unless path.match(/^\//)
+          path = "/#{path}"
+        end
         base_uri + path
       end
 

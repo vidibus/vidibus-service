@@ -74,6 +74,12 @@ describe Vidibus::Service::Client do
       response.code.should eql(200)
       response.should eql('something')
     end
+
+    it 'should turn a relative path into an absolute one' do
+      stub_http_request(:get, 'http://uploader.local/success').
+        with(:query => query)
+      client.get('success')
+    end
   end
 
   describe '#post' do
