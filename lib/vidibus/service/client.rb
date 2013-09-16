@@ -7,6 +7,7 @@ module Vidibus
       format :json
 
       class ServiceError < Error; end
+      class RequestError < Error; end
 
       attr_accessor :base_uri, :service, :this
 
@@ -51,7 +52,11 @@ module Vidibus
         options[options_type] = {:realm => service.realm_uuid, :service => this.uuid}.merge(options[options_type] || {})
         uri = build_uri(path)
         Vidibus::Secure.sign_request(verb, uri, options[options_type], secret)
-        self.class.send(verb, uri, options)
+        begin
+          self.class.send(verb, uri, options)
+        rescue StandardError, Exception => e
+          raise(RequestError, e.message, e.backtrace)
+        end
       end
 
       # Builds URI from base URI of service and given path.

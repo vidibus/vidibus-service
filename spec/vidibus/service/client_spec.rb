@@ -80,6 +80,27 @@ describe Vidibus::Service::Client do
         with(:query => query)
       client.get('success')
     end
+
+    it 'should re-raise a StandardError' do
+      stub(Vidibus::Service::Client).get { raise(StandardError) }
+      expect { client.get('success') }.
+        to raise_error(Vidibus::Service::Client::RequestError)
+    end
+
+    it 'should re-raise an Exception' do
+      stub(Vidibus::Service::Client).get { raise(Exception) }
+      expect { client.get('success') }.
+        to raise_error(Vidibus::Service::Client::RequestError)
+    end
+
+    it 'should should set original backtrace on error' do
+      stub(Vidibus::Service::Client).get { raise(StandardError) }
+      begin
+        client.get('success')
+      rescue Vidibus::Service::Client::RequestError => e
+        e.backtrace.first.should match('/client_spec.rb:')
+      end
+    end
   end
 
   describe '#post' do
