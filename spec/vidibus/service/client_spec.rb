@@ -30,6 +30,12 @@ describe Vidibus::Service::Client do
         to raise_error(Vidibus::Service::Client::ServiceError)
     end
 
+    it 'should require an url' do
+      stub(uploader).url {}
+      expect { Vidibus::Service::Client.new(uploader) }.
+        to raise_error(Vidibus::Service::Client::ServiceError)
+    end
+
     it 'should require this' do
       expect { Vidibus::Service::Client.new(uploader) }.
         to raise_error(Service::ConfigurationError)

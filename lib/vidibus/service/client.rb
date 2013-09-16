@@ -12,10 +12,15 @@ module Vidibus
 
       # Initializes a new client for given service.
       def initialize(service)
-        raise ServiceError.new("Service required") unless service and service.is_a?(::Service)
+        unless service && service.is_a?(::Service)
+          raise(ServiceError, 'Service required')
+        end
+        unless service.url
+          raise(ServiceError, 'URL of service required')
+        end
         self.service = service
         self.this = ::Service.this
-        self.base_uri = service.url or raise(ServiceError.new("URL of service required"))
+        self.base_uri = service.url
       end
 
       # Sends a GET request to given path.
