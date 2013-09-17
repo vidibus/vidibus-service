@@ -22,7 +22,7 @@ module Vidibus
         validates :realm_uuid, :uuid => {:allow_blank => true}
         validates :function, :presence => true
         validates :secret, :presence => true, :unless => :connector?
-        validates :realm_uuid, :presence => true, :unless => Proc.new {|s| s.connector? or s.this?}
+        validates :realm_uuid, :presence => true, :if => :realm_required?
 
         validate :dont_allow_secret_for_connector, :if => :connector?
 
@@ -69,6 +69,10 @@ module Vidibus
           if connector? && secret
             errors.add(:secret, :secret_not_allowed_for_connector)
           end
+        end
+
+        def realm_required?
+          !connector? && !this?
         end
       end
 
