@@ -93,10 +93,7 @@ module Vidibus
         # Returns best service by function or UUID within given realm.
         # If a service can be found in stored, it will be fetched from Connector.
         def discover(wanted, realm = nil)
-          unless service = local(wanted, realm)
-            service = remote(wanted, realm)
-          end
-          service
+          local(wanted, realm) || remote(wanted, realm)
         end
 
         # Returns stored service by function or UUID within given realm.
@@ -110,15 +107,21 @@ module Vidibus
         # This method should not be called directly. Use #discover to avoid unneccessary lookups.
         def remote(wanted, realm)
           unless realm
-            raise ArgumentError.new("Please provide a valid realm to discover an appropriate service.")
+            fail(ArgumentError, 'Please provide a valid realm to discover an appropriate service.')
           end
-          if response = connector.client.get("/services/#{wanted}", :query => {:realm => realm})
-            secret = response["secret"] || raise(ConnectorError.new("The Connector did not return a secret for #{wanted}. Response was: #{response.parsed_response.inspect}"))
+          response = connector.client.
+            get("/services/#{wanted}", :query => {:realm => realm})
+          if response
+            secret = response["secret"]
+            unless secret
+              fail(ConnectorError, "The Connector did not return a secret for #{wanted}. Response was: #{response.parsed_response.inspect}")
+            end
             secret = Vidibus::Secure.decrypt(secret, this.secret)
-            attributes = response.only(%w[uuid function url]).merge(:realm_uuid => realm, :secret => secret)
+            attributes = response.only(%w[uuid function url]).
+              merge(:realm_uuid => realm, :secret => secret)
             create!(attributes)
           else
-            raise "no service found"
+            fail('no service found')
           end
         end
       end

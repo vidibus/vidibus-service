@@ -236,7 +236,7 @@ describe 'Vidibus::Service::Mongoid' do
     end
 
     it 'should require a realm' do
-      expect  {Service.remote(:uploader, nil) }.to raise_error(ArgumentError)
+      expect  { Service.remote(:uploader, nil) }.to raise_error(ArgumentError)
     end
 
     it 'should fetch service data from Connector and create a local service object' do
