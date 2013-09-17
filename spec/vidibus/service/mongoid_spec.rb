@@ -142,6 +142,21 @@ describe 'Vidibus::Service::Mongoid' do
     end
   end
 
+  describe '#this' do
+    it 'should be false by default' do
+      Service.new.this.should eq(false)
+    end
+
+    it 'should be boolean' do
+      connector.update_attributes!(this: true)
+      connector.reload.this.should be_true
+      connector.update_attributes!(this: 'true')
+      connector.reload.this.should be_true
+      connector.update_attributes!(this: 'whatever')
+      connector.reload.this.should be_false
+    end
+  end
+
   describe '.this' do
     it 'should return this service' do
       this
