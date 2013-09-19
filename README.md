@@ -1,4 +1,4 @@
-# Vidibus::Service [![](http://travis-ci.org/vidibus/vidibus-service.png)](http://travis-ci.org/vidibus/vidibus-service)
+# Vidibus::Service [![Build Status](https://travis-ci.org/vidibus/vidibus-service.png)](https://travis-ci.org/vidibus/vidibus-service)
 
 DESCRIBE
 
