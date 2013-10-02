@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
   s.rubyforge_project         = "vidibus-service"
 
-  s.add_dependency "mongoid", ">= 3"
+  s.add_dependency "mongoid", "~> 4"
   s.add_dependency "vidibus-core_extensions"
   s.add_dependency "vidibus-secure"
   s.add_dependency "vidibus-uuid"
