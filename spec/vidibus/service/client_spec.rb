@@ -38,7 +38,7 @@ describe Vidibus::Service::Client do
 
     it 'should require this' do
       expect { Vidibus::Service::Client.new(uploader) }.
-        to raise_error(Service::ConfigurationError)
+        to raise_error(Vidibus::Service::ConfigurationError)
     end
 
     it 'should set URL of given service as base_uri' do

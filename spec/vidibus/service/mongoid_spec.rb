@@ -164,7 +164,8 @@ describe 'Vidibus::Service::Mongoid' do
     end
 
     it 'should raise an error if this service has not been configured yet' do
-      expect { Service.this }.to raise_error(Service::ConfigurationError)
+      expect { Service.this }.
+        to raise_error(Vidibus::Service::ConfigurationError)
     end
   end
 
@@ -175,7 +176,8 @@ describe 'Vidibus::Service::Mongoid' do
     end
 
     it 'should raise an error if the Connector has not been configured yet' do
-      expect { Service.connector }.to raise_error(Service::ConfigurationError)
+      expect { Service.connector }.
+        to raise_error(Vidibus::Service::ConfigurationError)
     end
   end
 

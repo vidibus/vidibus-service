@@ -4,9 +4,6 @@ module Vidibus
       extend ActiveSupport::Concern
       include Vidibus::Secure::Mongoid
 
-      class ConfigurationError < Error; end
-      class ConnectorError < Error; end
-
       included do
         field :url
         field :uuid
