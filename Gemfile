@@ -4,6 +4,6 @@ source 'https://rubygems.org'
 gemspec
 
 # gem 'mongoid', '>= 4', github: 'mongoid/mongoid'
-gem 'vidibus-secure', github: 'vidibus/vidibus-secure'
-gem 'vidibus-uuid', github: 'vidibus/vidibus-uuid'
-gem 'vidibus-validate_uri', github: 'vidibus/vidibus-validate_uri'
+# gem 'vidibus-secure', github: 'vidibus/vidibus-secure'
+# gem 'vidibus-uuid', github: 'vidibus/vidibus-uuid'
+# gem 'vidibus-validate_uri', github: 'vidibus/vidibus-validate_uri'
