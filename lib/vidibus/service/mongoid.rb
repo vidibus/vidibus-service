@@ -9,7 +9,7 @@ module Vidibus
         field :uuid
         field :function
         field :realm_uuid
-        field :this, :type => Boolean, :default => false
+        field :this, :type => ::Mongoid::Boolean, :default => false
 
         attr_accessor :nonce
         attr_encrypted :secret
