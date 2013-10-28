@@ -234,7 +234,7 @@ describe 'Vidibus::Service::Mongoid' do
       }
     end
     let(:body) do
-      %({"uuid":"c0861d609247012d0a8b58b035f038ab", "url":"http://uploader.local", "function":"uploader", "secret":"kjO8AjgX68Yp7OQ1XF8dTfPBE5GCuCnd/OPko+A9yCaw8qnj9xoyMGZEXQpf\niVBOUcux1qlW8hfT6UPKGoVfYA==\n"})
+      '{"uuid":"c0861d609247012d0a8b58b035f038ab", "url":"http://uploader.local", "function":"uploader", "secret":"kjO8AjgX68Yp7OQ1XF8dTfPBE5GCuCnd/OPko+A9yCaw8qnj9xoyMGZEXQpf\niVBOUcux1qlW8hfT6UPKGoVfYA==\n"}'
     end
 
     it 'should require a realm' do

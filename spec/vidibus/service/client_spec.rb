@@ -60,7 +60,7 @@ describe Vidibus::Service::Client do
     it 'should load data via GET' do
       stub_http_request(:get, 'http://uploader.local/success').
         with(:query => query).
-        to_return(:status => 200, :body => %({'hot':'stuff'}))
+        to_return(:status => 200, :body => %({"hot":"stuff"}))
       response = client.get('/success')
       response.code.should eql(200)
       response.should eql({'hot' => 'stuff'})
