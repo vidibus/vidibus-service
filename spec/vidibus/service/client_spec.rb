@@ -72,7 +72,14 @@ describe Vidibus::Service::Client do
         to_return(:status => 200, :body => 'something')
       response = client.get('/success')
       response.code.should eql(200)
-      response.should eql('something')
+    end
+
+    it 'should raise an error when evaluating a non-JSON response' do
+      stub_http_request(:get, 'http://uploader.local/success').
+        with(:query => query).
+        to_return(:status => 200, :body => 'something')
+      response = client.get('/success')
+      expect { response['whatever'] }.to raise_error(JSON::ParserError)
     end
 
     it 'should turn a relative path into an absolute one' do
