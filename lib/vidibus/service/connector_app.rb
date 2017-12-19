@@ -17,14 +17,14 @@ module Vidibus
           return response(:error => "This app must be configured to respond to /connector path.")
         end
         method = @request.request_method.downcase
-        if respond_to?(method)
+        if respond_to?(method, true)
           send(method)
         else
           response(:error => "Invalid request method: #{method}")
         end
       end
 
-      protected
+      private
 
       # Creates this service and, unless it has already been set up, a Connector service.
       # Once this service has been created, a secret will be traded for the given nonce.

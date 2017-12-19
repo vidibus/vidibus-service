@@ -251,7 +251,7 @@ describe "Vidibus::Service::ConnectorApp" do
       another_uploader = Service.create!(uploader_params.merge(:realm_uuid => "e75234809111012d05ac58b035f038ab", :secret => "whatever"))
       signed_request(:put, endpoint, {uploader.uuid => {:function => "fancy"}})
       last_response.status.should eql(200)
-      Service.where(:function => "fancy").to_a.should have(2).services
+      Service.where(:function => "fancy").to_a.count.should eq(2)
     end
 
     it "should fail if no uuid is given" do

@@ -48,7 +48,7 @@ describe 'Vidibus::Service::Mongoid' do
     it 'should fail without a function' do
       this.function = ''
       this.should be_invalid
-      this.errors[:function].should have(1).error
+      this.errors[:function].count.should eq(1)
     end
 
     it 'should pass with arbitrary functions' do
@@ -59,7 +59,7 @@ describe 'Vidibus::Service::Mongoid' do
     it 'should fail if a secret is given for Connector' do
       connector.secret = 'something'
       connector.should be_invalid
-      connector.errors[:secret].should have(1).error
+      connector.errors[:secret].count.should eq(1)
       connector.errors[:secret].first.
         should eql('is not allowed for a Connector')
     end
@@ -72,13 +72,13 @@ describe 'Vidibus::Service::Mongoid' do
     it 'should fail without a secret for services except Connector' do
       uploader.secret = nil
       uploader.should be_invalid
-      uploader.errors[:secret].should have(1).error
+      uploader.errors[:secret].count.should eq(1)
     end
 
     it 'should fail without a realm_uuid for services except Connector and this' do
       uploader.realm_uuid = nil
       uploader.should be_invalid
-      uploader.errors[:realm_uuid].should have(1).error
+      uploader.errors[:realm_uuid].count.should eq(1)
     end
 
     it 'should pass with empty realm_uuid for Connector' do
@@ -101,7 +101,7 @@ describe 'Vidibus::Service::Mongoid' do
         :uuid => uploader.uuid, :realm_uuid => realm
       })
       duplicate_service.should be_invalid
-      duplicate_service.errors[:uuid].should have(1).error
+      duplicate_service.errors[:uuid].count.should eq(1)
     end
   end
 
@@ -126,11 +126,11 @@ describe 'Vidibus::Service::Mongoid' do
 
   describe '#connector?' do
     it 'should return true if service is a Connector' do
-      connector.connector?.should be_true
+      connector.connector?.should eq(true)
     end
 
     it 'should return false if service is not a Connector' do
-      uploader.connector?.should be_false
+      uploader.connector?.should eq(false)
     end
   end
 
@@ -149,11 +149,11 @@ describe 'Vidibus::Service::Mongoid' do
 
     it 'should be boolean' do
       connector.update_attributes!(this: true)
-      connector.reload.this.should be_true
+      connector.reload.this.should eq(true)
       connector.update_attributes!(this: 'true')
-      connector.reload.this.should be_true
+      connector.reload.this.should eq(true)
       connector.update_attributes!(this: 'whatever')
-      connector.reload.this.should be_false
+      connector.reload.this.should eq(false)
     end
   end
 

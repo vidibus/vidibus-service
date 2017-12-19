@@ -63,7 +63,6 @@ describe Vidibus::Service::Client do
         to_return(:status => 200, :body => %({"hot":"stuff"}))
       response = client.get('/success')
       response.code.should eql(200)
-      response.should eql({'hot' => 'stuff'})
     end
 
     it 'should handle non-JSON responses' do
